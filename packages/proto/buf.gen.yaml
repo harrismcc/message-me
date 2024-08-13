@@ -1,0 +1,24 @@
+version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/harrismcc/example/proto
+plugins:
+  # Go
+  - remote: buf.build/protocolbuffers/go
+    out: gen
+    opt: paths=source_relative
+  - remote: buf.build/connectrpc/go
+    out: gen
+    opt: paths=source_relative
+
+  # TypeScript
+  - local: protoc-gen-es
+    out: gen-ts
+    opt: target=ts
+  - local: protoc-gen-connect-es
+    out: gen-ts
+    opt: target=ts
+inputs:
+  - directory: definitions

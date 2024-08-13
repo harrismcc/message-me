@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package thermal;
+
+service ThermalPrinterService {
+	rpc PrintText(PrintTextRequest) returns (PrintResponse);
+	rpc TakePicture(Empty) returns (stream ImageFileResponse) {}
+};
+
+message Empty {}
+
+message ImageFileResponse {
+	bytes chunk_data = 2;
+}; 
+
+message PrintTextRequest {
+	// The name of the message sender
+	string sender = 1;
+	// The location of the sender
+	optional string location = 2;
+	// The message body
+	string body = 3;
+};
+
+message PrintResponse {
+	bool success = 1;
+};

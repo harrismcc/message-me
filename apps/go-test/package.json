@@ -1,0 +1,9 @@
+{
+  "name": "@acme/go-test",
+  "scripts": {
+    "dev": "nodemon --watch './**/*.go' -e go --signal SIGTERM --exec 'go' run ."
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": ["**/.env", "tsconfig.json"],
+  "tasks": {
+    "generate": {
+      "cache": true,
+      "outputs": ["packages/proto/gen/**", "packages/proto/gen-ts/**"]
+    },
+    "dev": {
+      "dependsOn": ["install-ollama", "generate"],
+      "inputs": ["apps/desktop/**"],
+      "cache": false,
+      "persistent": true
+    },
+    "dev:web": {
+      "inputs": ["apps/desktop/**"],
+      "persistent": true,
+      "cache": false
+    },
+    "install-ollama": {
+      "cache": true
+    },
+    "storybook": {
+      "persistent": true,
+      "cache": false
+    },
+    "build:web": {
+      "dependsOn": ["^build", "^lint"],
+      "outputs": ["apps/desktop/dist/**", "apps/nextjs/.next/**"]
+    },
+    "build": {
+      "dependsOn": ["^build", "^lint", "build:web", "^generate"],
+      "outputs": ["apps/desktop/src-tauri/target/**"]
+    },
+    "lint": {},
+    "lint:fix": {},
+    "clean": {
+      "cache": false
+    },
+    "type-check": {
+      "cache": false
+    }
+  },
+  "globalEnv": []
+}

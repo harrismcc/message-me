@@ -1,0 +1,25 @@
+{
+  "name": "@acme/proto",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": {
+      "import": "./gen-ts/*"
+    }
+  },
+  "scripts": {
+    "generate": "buf generate"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.36.0",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@bufbuild/protoc-gen-es": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.4.0",
+    "grpc-tools": "^1.12.4",
+    "grpc_tools_node_protoc_ts": "^5.3.3"
+  },
+  "dependencies": {
+    "google-protobuf": "^3.21.4"
+  }
+}
