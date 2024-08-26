@@ -6,7 +6,7 @@ on:
       - main # This triggers on pushes to the main branch, including merges
 
 jobs:
-  build:
+  build-print-server:
     runs-on: ubuntu-latest
     permissions:
       contents: write

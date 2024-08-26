@@ -24,12 +24,8 @@
       "persistent": true,
       "cache": false
     },
-    "build:web": {
-      "dependsOn": ["^build", "^lint"],
-      "outputs": ["apps/desktop/dist/**", "apps/nextjs/.next/**"]
-    },
     "build": {
-      "dependsOn": ["^build", "^lint", "build:web", "^generate"],
+      "dependsOn": ["^build", "^lint"],
       "outputs": ["apps/desktop/src-tauri/target/**"]
     },
     "lint": {},

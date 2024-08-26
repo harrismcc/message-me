@@ -17,6 +17,9 @@ target
 # Turborepo
 .turbo
 
+# Turbo prune output
+out/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
