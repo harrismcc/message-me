@@ -6,6 +6,9 @@
       "cache": true,
       "outputs": ["packages/proto/gen/**", "packages/proto/gen-ts/**"]
     },
+    "migrate": {
+      "cache": false
+    },
     "dev": {
       "dependsOn": ["install-ollama", "generate"],
       "inputs": ["apps/desktop/**"],

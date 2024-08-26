@@ -51,4 +51,5 @@ COPY --from=production-deps /app .
 COPY --from=builder /app/apps/$APP_DIRNAME/build ./apps/$APP_DIRNAME/build
 COPY --from=builder /app/apps/$APP_DIRNAME/public ./apps/$APP_DIRNAME/public
 
-CMD ["pnpm", "--filter", "web-ui", "start"]
+CMD pnpm turbo migrate --env-mode loose; pnpm --filter web-ui start
+# CMD ["pnpm", "--filter", "web-ui", "start"]
