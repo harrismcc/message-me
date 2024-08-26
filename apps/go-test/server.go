@@ -16,7 +16,7 @@ import (
 )
 
 // TODO: This should be defined by the env vars
-const address = "localhost:8080"
+const address = "0.0.0.0:8080"
 
 // The print lock mutex. Used to make sure two print jobs aren't sent at the same time
 var printLock sync.Mutex
@@ -48,6 +48,12 @@ func (s *thermalServer) PrintText(
 
 	_, err := http.Post("https://ntfy.sh/harris-thermal-printer-test", "text/plain", strings.NewReader(req.Msg.Body))
 
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// Call the print function
+	err = printMessage(req.Msg.Sender, req.Msg.Body)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

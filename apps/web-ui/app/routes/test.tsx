@@ -1,11 +1,8 @@
-import { ThermalPrinterService } from "@acme/proto/thermal_connect.js";
 import { Button } from "@acme/ui";
-import { createPromiseClient } from "@connectrpc/connect";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node"; // or cloudflare/deno
 import { useFetcher } from "@remix-run/react";
-import { grpcTransport } from "~/test.server";
-import fs from "fs";
+import { db, message } from "@acme/db";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,16 +13,12 @@ export const meta: MetaFunction = () => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function action({ request }: ActionFunctionArgs) {
-  const client = createPromiseClient(ThermalPrinterService, grpcTransport);
-  const resStream = client.takePicture({});
-  const writeStream = fs.createWriteStream("/tmp/1GB.bin");
+  const [myMessage] = await db
+    .insert(message)
+    .values({ sender: "harris", body: "my message" })
+    .returning();
 
-  for await (const response of resStream) {
-    writeStream.write(response.chunkData);
-  }
-  writeStream.end();
-
-  return json({});
+  return json(myMessage);
 }
 
 export default function Test() {
@@ -41,6 +34,7 @@ export default function Test() {
       >
         Send the file
       </Button>
+      {fetcher.data && <p>Name: {fetcher.data.sender}</p>}
     </div>
   );
 }
