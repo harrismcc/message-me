@@ -8,8 +8,7 @@ on:
 jobs:
   build-webui:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    permissions: write-all
 
     steps:
       - name: Check out repository code
