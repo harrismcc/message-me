@@ -16,8 +16,8 @@ message ImageFileResponse {
 message PrintTextRequest {
 	// The name of the message sender
 	string sender = 1;
-	// The location of the sender
-	optional string location = 2;
+	// The timestamp, as a string
+	string timeStamp = 2;
 	// The message body
 	string body = 3;
 };

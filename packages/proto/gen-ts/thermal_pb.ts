@@ -86,11 +86,11 @@ export class PrintTextRequest extends Message<PrintTextRequest> {
   sender = "";
 
   /**
-   * The location of the sender
+   * The timestamp, as a string
    *
-   * @generated from field: optional string location = 2;
+   * @generated from field: string timeStamp = 2;
    */
-  location?: string;
+  timeStamp = "";
 
   /**
    * The message body
@@ -108,7 +108,7 @@ export class PrintTextRequest extends Message<PrintTextRequest> {
   static readonly typeName = "thermal.PrintTextRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "sender", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "location", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 2, name: "timeStamp", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 

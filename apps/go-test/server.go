@@ -53,7 +53,7 @@ func (s *thermalServer) PrintText(
 	}
 
 	// Call the print function
-	err = printMessage(req.Msg.Sender, req.Msg.Body)
+	err = printMessage(req.Msg.Sender, req.Msg.Body, req.Msg.TimeStamp)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
