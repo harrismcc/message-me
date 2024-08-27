@@ -17,9 +17,8 @@
   "dependencies": {
     "@manypkg/cli": "^0.21.0",
     "dotenv-cli": "^7.2.1",
-    "prettier": "^3.2.5",
-    "@remix-run/serve": "^2.11.1",
     "drizzle-kit": "^0.24.0",
+    "prettier": "^3.2.5",
     "turbo": "^2.0.3"
   },
   "packageManager": "pnpm@8.15.2",

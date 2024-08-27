@@ -35,6 +35,7 @@ import { z } from "zod";
 import { MessageCard } from "~/components";
 import { grpcTransport } from "~/test.server";
 import { useState } from "react";
+import anyAscii from "any-ascii";
 
 export const meta: MetaFunction = () => {
   return [
@@ -71,7 +72,10 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const client = createPromiseClient(ThermalPrinterService, grpcTransport);
-  const res = await client.printText({ body: data.body, sender: data.sender });
+  const res = await client.printText({
+    body: anyAscii(data.body),
+    sender: data.sender,
+  });
 
   await db
     .update(message)

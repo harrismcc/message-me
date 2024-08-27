@@ -25,6 +25,7 @@
     "@remix-run/react": "^2.11.1",
     "@remix-run/serve": "^2.11.1",
     "@t3-oss/env-core": "^0.11.0",
+    "any-ascii": "^0.3.2",
     "drizzle-orm": "^0.33.0",
     "isbot": "^4.1.0",
     "moment": "^2.30.1",
@@ -54,8 +55,8 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4",
     "postcss-import": "^15.1.0",
+    "tailwindcss": "^3.4.4",
     "typescript": "^5.1.6",
     "vite": "^5.1.0",
     "vite-tsconfig-paths": "^4.2.1"
