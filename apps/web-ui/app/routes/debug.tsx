@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   // eslint-disable-next-line no-restricted-properties
   if (process.env.NODE_ENV === "production") {
     // Only use this page in dev
-    redirect("/");
+    throw redirect("/");
   }
 
   const session = await getSession(request.headers.get("Cookie"));
