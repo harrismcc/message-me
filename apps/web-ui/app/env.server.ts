@@ -5,6 +5,7 @@ export const env = createEnv({
   server: {
     THERMAL_PRINTER_GRPC: z.string().url(),
     DATABASE_URL: z.string().url(),
+    JWT_SECRET: z.string(),
   },
 
   /**

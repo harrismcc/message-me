@@ -15,6 +15,20 @@
       "when": 1724695152819,
       "tag": "0001_peaceful_medusa",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725045830410,
+      "tag": "0002_sour_junta",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1725046375082,
+      "tag": "0003_pink_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

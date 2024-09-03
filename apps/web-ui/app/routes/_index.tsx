@@ -1,4 +1,4 @@
-import { db, message } from "@acme/db";
+import { db, message, user } from "@acme/db";
 import { ThermalPrinterService } from "@acme/proto/thermal_connect.js";
 import {
   Button,
@@ -19,7 +19,11 @@ import {
 import { Textarea } from "@acme/ui/textarea";
 import { createPromiseClient } from "@connectrpc/connect";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json } from "@remix-run/node"; // or cloudflare/deno
 import {
   isRouteErrorResponse,
@@ -34,6 +38,8 @@ import { MessageCard } from "~/components";
 import { grpcTransport } from "~/test.server";
 import anyAscii from "any-ascii";
 import moment from "moment";
+import { commitSession, getSession } from "~/sessions";
+import { getOrCreateUser } from "~/helpers/getOrCreateUser.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -47,7 +53,7 @@ const formSchema = z.object({
     .string()
     .min(2, { message: "Must be at least 2 characters." })
     .max(750, "Must be no more than 750 characters."),
-  sender: z.string().max(100, "Must be no more than 100 characters."),
+  username: z.string().max(100, "Must be no more than 100 characters."),
   email: z.string().email("Must be a valid email").optional(),
 });
 
@@ -59,39 +65,61 @@ export async function action({ request }: ActionFunctionArgs) {
     throw json(error, { status: 400 });
   }
 
+  const session = await getSession(request.headers.get("Cookie"));
+  const user = await getOrCreateUser(session, data.username);
+
   // Create message in the DB
   const [myMessage] = await db
     .insert(message)
-    .values({ ...data })
+    .values({ ...data, senderId: user.id })
     .returning();
 
   if (!myMessage) {
     throw json(Error("Failed to create db entry"), { status: 500 });
   }
 
-  const client = createPromiseClient(ThermalPrinterService, grpcTransport);
-  const res = await client.printText({
-    body: anyAscii(data.body),
-    sender: data.sender,
-    timeStamp: moment(myMessage.createdAt).format("M/D/YY [at] h:mmA"),
-  });
+  // eslint-disable-next-line no-restricted-properties
+  if (process.env.NODE_ENV === "production") {
+    const client = createPromiseClient(ThermalPrinterService, grpcTransport);
+    await client.printText({
+      body: anyAscii(data.body),
+      sender: user.username,
+      timeStamp: moment(myMessage.createdAt).format("M/D/YY [at] h:mmA"),
+    });
+  }
 
   await db
     .update(message)
     .set({ printedAt: new Date() })
     .where(eq(message.id, myMessage.id));
 
-  return json({ message: myMessage, response: res });
+  return json(
+    { message: myMessage },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    },
+  );
 }
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return json({ messages: [], username: undefined });
+  }
+
   const messages = await db
     .select()
     .from(message)
+    .leftJoin(user, eq(user.id, message.senderId))
+    .where(eq(message.senderId, userId))
     .orderBy(desc(message.createdAt))
     .limit(10);
 
-  return json(messages);
+  return json({ messages, username: session.get("username") });
 };
 
 export const ErrorBoundary = ({ children }: { children: React.ReactNode }) => {
@@ -117,14 +145,15 @@ export default function Index() {
     resolver: zodResolver(formSchema),
   });
 
+  const username = form.watch("username");
+
   return (
     <div className="p-4 font-sans">
-      <Card className="mb-3 p-4">
+      <Card className="mb-6 p-4">
         <CardHeader>
           <CardTitle>Send Me a Message!</CardTitle>
           <CardDescription>
-            Go ahead and send me a message, it will print out at my desk! Please
-            keep in mind that all messages will be displayed publicly.
+            Go ahead and send me a message, it will print out at my desk!
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -133,14 +162,16 @@ export default function Index() {
               (values: z.infer<typeof formSchema>) => {
                 fetcher.submit(values, { method: "POST" });
                 // Reset the form values
-                form.reset({ sender: "", body: "" });
+                form.reset({ username, body: "" });
               },
             )}
             className="space-y-8"
           >
             <FormField
               control={form.control}
-              name="sender"
+              name="username"
+              defaultValue={data.username}
+              disabled={!!data.username}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Your Name</FormLabel>
@@ -156,7 +187,7 @@ export default function Index() {
               name="body"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bio</FormLabel>
+                  <FormLabel>Body</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Send me a message!"
@@ -178,9 +209,20 @@ export default function Index() {
           </form>
         </Form>
       </Card>
-
       <div className="flex flex-col gap-3">
-        {data && data.map((message) => <MessageCard message={message} />)}
+        {data.messages.map(({ messages, users }) => (
+          <MessageCard message={messages} user={users} />
+        ))}
+        {data.messages.length <= 0 && (
+          <Card className="border-dashed">
+            <CardHeader>
+              <CardTitle>You Haven't Sent Any Messages (Yet)</CardTitle>
+              <CardDescription>
+                Use the form above to send me your first message!
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
       </div>
     </div>
   );

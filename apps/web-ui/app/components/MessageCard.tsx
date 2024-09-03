@@ -7,22 +7,24 @@ import {
   AspectRatio,
 } from "@acme/ui";
 import type { InferSelectModel } from "drizzle-orm";
-import type { message } from "@acme/db";
+import type { message, user } from "@acme/db";
 import moment from "moment";
 
 export interface MessageCardInput {
   message: InferSelectModel<typeof message>;
+  user: InferSelectModel<typeof user>;
   imageSrc?: string;
 }
 
 export const MessageCard: React.FC<MessageCardInput> = ({
   message,
+  user,
   imageSrc,
 }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{message.sender}</CardTitle>
+        <CardTitle>{user.username}</CardTitle>
         <CardDescription>
           {message.printedAt ? (
             <p>Printed {moment(message.printedAt).fromNow()}</p>
