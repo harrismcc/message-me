@@ -7,5 +7,6 @@ func GetDefaultTags() map[string]Tag {
 		UnderlineTag.Name: UnderlineTag,
 		BorderTag.Name:    BorderTag,
 		BrTag.Name:        BrTag,
+		QRTag.Name:        QRTag,
 	}
 }
